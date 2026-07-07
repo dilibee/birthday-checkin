@@ -1,26 +1,52 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwmM4jyZH-lweodCs8BoGEBa7WQBbES2SDGbJdBfDJgxRIxAUpB4Q-z2cncS2Gpg9bQCg/exec";
 
+let html5QrCode;
 let processing = false;
 
 
-function onScanSuccess(decodedText) {
+function startScanner() {
 
-    // Prevent multiple scans at once
-    if (processing) return;
+    html5QrCode = new Html5Qrcode("reader");
 
-    processing = true;
+
+    html5QrCode.start(
+        { facingMode: "environment" },
+        {
+            fps: 20,
+            qrbox: 300
+        },
+
+        qrCodeMessage => {
+
+            if (processing) return;
+
+            processing = true;
+
+            checkTicket(qrCodeMessage);
+
+        },
+
+        errorMessage => {
+            // Ignore scan errors
+        }
+
+    );
+
+}
+
+
+
+function checkTicket(ticketID) {
 
 
     document.getElementById("status").innerHTML =
-    `
-    <div>
-    🔎 Checking ticket...
-    </div>
-    `;
+    "🔎 Checking ticket...";
 
 
-    fetch(API_URL + "?id=" + encodeURIComponent(decodedText))
+    fetch(API_URL + "?id=" + encodeURIComponent(ticketID))
+
     .then(response => response.json())
+
     .then(data => {
 
 
@@ -35,9 +61,7 @@ function onScanSuccess(decodedText) {
             </div>
             `;
 
-
         } else {
-
 
             document.getElementById("status").innerHTML =
             `
@@ -46,7 +70,6 @@ function onScanSuccess(decodedText) {
             ${data.name || ""}
             </div>
             `;
-
 
         }
 
@@ -58,7 +81,7 @@ function onScanSuccess(decodedText) {
 
             processing = false;
 
-        }, 3000);
+        },3000);
 
 
     })
@@ -67,7 +90,6 @@ function onScanSuccess(decodedText) {
     .catch(error => {
 
         console.log(error);
-
 
         document.getElementById("status").innerHTML =
         `
@@ -86,30 +108,10 @@ function onScanSuccess(decodedText) {
 
         },3000);
 
-
     });
 
 }
 
 
 
-function onScanFailure(error) {
-
-    // Ignore failed scans
-}
-
-
-
-let html5QrcodeScanner = new Html5QrcodeScanner(
-    "reader",
-    {
-        fps: 20,
-        qrbox: 300
-    }
-);
-
-
-html5QrcodeScanner.render(
-    onScanSuccess,
-    onScanFailure
-);
+startScanner();
