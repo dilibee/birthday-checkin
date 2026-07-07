@@ -4,38 +4,48 @@ let html5QrCode;
 let processing = false;
 
 
+// Start camera scanner
 function startScanner() {
 
     html5QrCode = new Html5Qrcode("reader");
 
 
     html5QrCode.start(
-        { facingMode: "environment" },
+        {
+            facingMode: "environment"
+        },
         {
             fps: 20,
             qrbox: 300
         },
 
-        qrCodeMessage => {
+        (decodedText) => {
 
             if (processing) return;
 
             processing = true;
 
-            checkTicket(qrCodeMessage);
+            checkTicket(decodedText);
 
         },
 
-        errorMessage => {
-            // Ignore scan errors
+        (errorMessage) => {
+            // Ignore normal scanning errors
         }
 
-    );
+    )
+    .catch(err => {
+
+        document.getElementById("status").innerHTML =
+        "Camera error: " + err;
+
+    });
 
 }
 
 
 
+// Check guest database
 function checkTicket(ticketID) {
 
 
@@ -52,36 +62,52 @@ function checkTicket(ticketID) {
 
         if (data.success) {
 
-            document.getElementById("status").innerHTML =
-            `
-            <div class="approved">
-            ✅ APPROVED<br><br>
-            ${data.name}<br>
-            Guests: ${data.guests}
-            </div>
-            `;
+
+            showResult(
+                true,
+                "✅ APPROVED",
+                data.name,
+                "Guests: " + data.guests
+            );
+
+
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+
 
         } else {
 
-            document.getElementById("status").innerHTML =
-            `
-            <div class="denied">
-            ❌ ${data.message}<br><br>
-            ${data.name || ""}
-            </div>
-            `;
+
+            showResult(
+                false,
+                "❌ DENIED",
+                data.message,
+                data.name || ""
+            );
+
+
+            if (navigator.vibrate) {
+                navigator.vibrate([200,100,200]);
+            }
+
 
         }
 
 
+
         setTimeout(() => {
+
 
             document.getElementById("status").innerHTML =
             "Ready to scan...";
 
+
             processing = false;
 
+
         },3000);
+
 
 
     })
@@ -89,24 +115,20 @@ function checkTicket(ticketID) {
 
     .catch(error => {
 
+
         console.log(error);
 
-        document.getElementById("status").innerHTML =
-        `
-        <div class="denied">
-        ❌ Error connecting to database
-        </div>
-        `;
+
+        showResult(
+            false,
+            "❌ ERROR",
+            "Database connection failed",
+            ""
+        );
 
 
-        setTimeout(() => {
+        processing = false;
 
-            document.getElementById("status").innerHTML =
-            "Ready to scan...";
-
-            processing = false;
-
-        },3000);
 
     });
 
@@ -114,4 +136,76 @@ function checkTicket(ticketID) {
 
 
 
+
+// Full screen result
+function showResult(success, title, name, guests) {
+
+
+    const overlay =
+    document.getElementById("resultOverlay");
+
+
+    overlay.className =
+    success ? "approvedScreen" : "deniedScreen";
+
+
+    document.getElementById("resultTitle").innerHTML =
+    title;
+
+
+    document.getElementById("resultName").innerHTML =
+    name;
+
+
+    document.getElementById("resultGuests").innerHTML =
+    guests;
+
+
+    playSound(success);
+
+
+
+    setTimeout(() => {
+
+        overlay.className = "";
+
+    },3000);
+
+
+}
+
+
+
+
+// Sounds
+function playSound(success) {
+
+
+    let sound;
+
+
+    if (success) {
+
+        sound =
+        "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg";
+
+    } else {
+
+        sound =
+        "https://actions.google.com/sounds/v1/alarms/beep_short.ogg";
+
+    }
+
+
+    let audio = new Audio(sound);
+
+    audio.play();
+
+}
+
+
+
+// Start scanner
 startScanner();
+
+
