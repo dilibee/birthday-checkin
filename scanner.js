@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwsvv_sesHg2pWmA6m5hdLZtzy-5Ys2eOTVNDXbxV8tAbMg3wkmGyXwSl5wIK0QCn5RUw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwmM4jyZH-lweodCs8BoGEBa7WQBbES2SDGbJdBfDJgxRIxAUpB4Q-z2cncS2Gpg9bQCg/exec";
 
 
 function onScanSuccess(decodedText) {
