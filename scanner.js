@@ -181,27 +181,50 @@ function showResult(success, title, name, guests) {
 function playSound(success) {
 
 
-    let sound;
+    const audioContext =
+    new (window.AudioContext || window.webkitAudioContext)();
 
 
-    if (success) {
+    const oscillator =
+    audioContext.createOscillator();
 
-        sound =
-        "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg";
+
+    const gain =
+    audioContext.createGain();
+
+
+
+    oscillator.connect(gain);
+
+    gain.connect(audioContext.destination);
+
+
+
+    if(success){
+
+        oscillator.frequency.value = 880;
+        gain.gain.value = 0.3;
 
     } else {
 
-        sound =
-        "https://actions.google.com/sounds/v1/alarms/beep_short.ogg";
+        oscillator.frequency.value = 220;
+        gain.gain.value = 0.3;
 
     }
 
 
-    let audio = new Audio(sound);
+    oscillator.start();
 
-    audio.play();
+
+    oscillator.stop(
+        audioContext.currentTime + 0.25
+    );
+
 
 }
+
+
+
 
 
 
