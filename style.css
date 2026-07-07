@@ -1,7 +1,6 @@
 body {
 
     margin:0;
-
     min-height:100vh;
 
     background:
@@ -9,66 +8,51 @@ body {
 
     color:white;
 
-    font-family:
-    Georgia, serif;
+    font-family:Georgia, serif;
 
     text-align:center;
 
 }
 
 
-
 .page {
 
-    padding:25px;
+    padding:20px;
 
 }
-
 
 
 .header h1 {
 
     font-size:32px;
-
     color:#d4af37;
 
-    margin-bottom:5px;
-
 }
-
 
 
 .header p {
 
-    font-size:18px;
-
+    color:#ddd;
     letter-spacing:2px;
-
-    color:#eee;
 
 }
 
 
-
 .scanner-card {
 
-    margin:30px auto;
+    margin:25px auto;
 
     max-width:500px;
 
     background:#111;
 
-    padding:20px;
+    padding:15px;
 
     border-radius:25px;
 
     border:2px solid #d4af37;
 
-    box-shadow:
-    0 0 30px rgba(212,175,55,0.4);
-
 }
-
 
 
 #reader {
@@ -76,7 +60,6 @@ body {
     width:100%;
 
 }
-
 
 
 #status {
@@ -91,33 +74,34 @@ body {
 
 
 
-#resultOverlay {
+/* FULL SCREEN RESULT */
 
-    display:none;
+#resultOverlay {
 
     position:fixed;
 
-    inset:0;
+    top:0;
+    left:0;
 
-    z-index:100;
+    width:100vw;
+    height:100vh;
+
+    display:none;
 
     justify-content:center;
 
     align-items:center;
 
-}
+    z-index:9999;
 
+}
 
 
 #resultBox {
 
-    width:90%;
+    text-align:center;
 
     padding:40px;
-
-    border-radius:30px;
-
-    color:white;
 
 }
 
@@ -125,23 +109,25 @@ body {
 
 #resultTitle {
 
-    font-size:55px;
+    font-size:60px;
 
 }
-
 
 
 #resultName {
 
     font-size:35px;
 
-}
+    margin-top:20px;
 
+}
 
 
 #resultGuests {
 
     font-size:25px;
+
+    margin-top:15px;
 
 }
 
@@ -151,7 +137,7 @@ body {
 
     display:flex !important;
 
-    background:#0b7d32;
+    background:#087f23;
 
 }
 
@@ -161,7 +147,7 @@ body {
 
     display:flex !important;
 
-    background:#9b0000;
+    background:#a00000;
 
 }
 
