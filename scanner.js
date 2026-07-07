@@ -43,7 +43,8 @@ function onScanSuccess(decodedText) {
         // Restart scanner after 3 seconds
         setTimeout(() => {
 
-            location.reload();
+            document.getElementById("status").innerHTML =
+            "Ready to scan...";
 
         },3000);
 
@@ -70,8 +71,8 @@ function onScanFailure(error) {
 let html5QrcodeScanner = new Html5QrcodeScanner(
     "reader",
     {
-        fps: 10,
-        qrbox: 250
+        fps: 20,
+        qrbox: 300
     }
 );
 
