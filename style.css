@@ -1,42 +1,168 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #111;
-    color: white;
-    text-align: center;
+
+    margin:0;
+
+    min-height:100vh;
+
+    background:
+    radial-gradient(circle at top,#3b2a00,#000);
+
+    color:white;
+
+    font-family:
+    Georgia, serif;
+
+    text-align:center;
+
 }
 
-.container {
-    max-width: 500px;
-    margin: auto;
-    padding: 20px;
+
+
+.page {
+
+    padding:25px;
+
 }
 
-h1 {
-    margin-bottom: 20px;
+
+
+.header h1 {
+
+    font-size:32px;
+
+    color:#d4af37;
+
+    margin-bottom:5px;
+
 }
+
+
+
+.header p {
+
+    font-size:18px;
+
+    letter-spacing:2px;
+
+    color:#eee;
+
+}
+
+
+
+.scanner-card {
+
+    margin:30px auto;
+
+    max-width:500px;
+
+    background:#111;
+
+    padding:20px;
+
+    border-radius:25px;
+
+    border:2px solid #d4af37;
+
+    box-shadow:
+    0 0 30px rgba(212,175,55,0.4);
+
+}
+
+
 
 #reader {
+
     width:100%;
+
 }
+
+
 
 #status {
+
     margin-top:20px;
-    padding:20px;
-    border-radius:15px;
-    background:#333;
+
     font-size:22px;
+
+    color:#d4af37;
+
 }
 
-.approved {
-    background:#1b8f3a;
-    padding:20px;
-    border-radius:15px;
+
+
+#resultOverlay {
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    justify-content:center;
+
+    align-items:center;
+
 }
 
-.denied {
-    background:#b52b2b;
-    padding:20px;
-    border-radius:15px;
+
+
+#resultBox {
+
+    width:90%;
+
+    padding:40px;
+
+    border-radius:30px;
+
+    color:white;
+
+}
+
+
+
+#resultTitle {
+
+    font-size:55px;
+
+}
+
+
+
+#resultName {
+
+    font-size:35px;
+
+}
+
+
+
+#resultGuests {
+
+    font-size:25px;
+
+}
+
+
+
+.approvedScreen {
+
+    display:flex !important;
+
+    background:#0b7d32;
+
+}
+
+
+
+.deniedScreen {
+
+    display:flex !important;
+
+    background:#9b0000;
+
 }
 
 
