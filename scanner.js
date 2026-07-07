@@ -1,17 +1,25 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwmM4jyZH-lweodCs8BoGEBa7WQBbES2SDGbJdBfDJgxRIxAUpB4Q-z2cncS2Gpg9bQCg/exec";
 
+let processing = false;
+
 
 function onScanSuccess(decodedText) {
 
-    // Stop scanner temporarily
-    html5QrcodeScanner.clear();
+    // Prevent multiple scans at once
+    if (processing) return;
+
+    processing = true;
 
 
     document.getElementById("status").innerHTML =
-        "Checking ticket...";
+    `
+    <div>
+    🔎 Checking ticket...
+    </div>
+    `;
 
 
-    fetch(API_URL + "?id=" + decodedText)
+    fetch(API_URL + "?id=" + encodeURIComponent(decodedText))
     .then(response => response.json())
     .then(data => {
 
@@ -27,7 +35,9 @@ function onScanSuccess(decodedText) {
             </div>
             `;
 
+
         } else {
+
 
             document.getElementById("status").innerHTML =
             `
@@ -37,35 +47,57 @@ function onScanSuccess(decodedText) {
             </div>
             `;
 
+
         }
 
 
-        // Restart scanner after 3 seconds
         setTimeout(() => {
 
             document.getElementById("status").innerHTML =
             "Ready to scan...";
 
-        },3000);
+            processing = false;
+
+        }, 3000);
 
 
     })
 
+
     .catch(error => {
 
-        document.getElementById("status").innerHTML =
-        "Error connecting to database";
-
         console.log(error);
+
+
+        document.getElementById("status").innerHTML =
+        `
+        <div class="denied">
+        ❌ Error connecting to database
+        </div>
+        `;
+
+
+        setTimeout(() => {
+
+            document.getElementById("status").innerHTML =
+            "Ready to scan...";
+
+            processing = false;
+
+        },3000);
+
 
     });
 
 }
 
 
+
 function onScanFailure(error) {
 
+    // Ignore failed scans
 }
+
 
 
 let html5QrcodeScanner = new Html5QrcodeScanner(
@@ -81,5 +113,3 @@ html5QrcodeScanner.render(
     onScanSuccess,
     onScanFailure
 );
-
-
