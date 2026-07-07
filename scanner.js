@@ -1,22 +1,21 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwmM4jyZH-lweodCs8BoGEBa7WQBbES2SDGbJdBfDJgxRIxAUpB4Q-z2cncS2Gpg9bQCg/exec";
+const API_URL = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
 
 let html5QrCode;
 let processing = false;
 
 
-// Start camera scanner
+// Start scanner
 function startScanner() {
 
     html5QrCode = new Html5Qrcode("reader");
-
 
     html5QrCode.start(
         {
             facingMode: "environment"
         },
         {
-            fps: 20,
-            qrbox: 300
+            fps: 15,
+            qrbox: 280
         },
 
         (decodedText) => {
@@ -25,19 +24,24 @@ function startScanner() {
 
             processing = true;
 
+            // Pause camera while checking
+            html5QrCode.pause();
+
             checkTicket(decodedText);
 
         },
 
-        (errorMessage) => {
-            // Ignore normal scanning errors
+        () => {
+            // Ignore normal scan failures
         }
 
     )
     .catch(err => {
 
+        console.log(err);
+
         document.getElementById("status").innerHTML =
-        "Camera error: " + err;
+        "Camera failed";
 
     });
 
@@ -45,7 +49,7 @@ function startScanner() {
 
 
 
-// Check guest database
+// Check database
 function checkTicket(ticketID) {
 
 
@@ -60,7 +64,7 @@ function checkTicket(ticketID) {
     .then(data => {
 
 
-        if (data.success) {
+        if(data.success){
 
 
             showResult(
@@ -71,9 +75,7 @@ function checkTicket(ticketID) {
             );
 
 
-            if (navigator.vibrate) {
-                navigator.vibrate(200);
-            }
+            vibrate([200]);
 
 
         } else {
@@ -87,16 +89,16 @@ function checkTicket(ticketID) {
             );
 
 
-            if (navigator.vibrate) {
-                navigator.vibrate([200,100,200]);
-            }
-
+            vibrate([200,100,200]);
 
         }
 
 
 
-        setTimeout(() => {
+        setTimeout(()=>{
+
+
+            hideResult();
 
 
             document.getElementById("status").innerHTML =
@@ -106,14 +108,18 @@ function checkTicket(ticketID) {
             processing = false;
 
 
-        },3000);
+            // Resume camera
+            html5QrCode.resume();
+
+
+        },2500);
 
 
 
     })
 
 
-    .catch(error => {
+    .catch(error=>{
 
 
         console.log(error);
@@ -122,26 +128,35 @@ function checkTicket(ticketID) {
         showResult(
             false,
             "❌ ERROR",
-            "Database connection failed",
+            "Connection failed",
             ""
         );
 
 
-        processing = false;
+        setTimeout(()=>{
+
+            hideResult();
+
+            processing=false;
+
+            html5QrCode.resume();
+
+
+        },2500);
 
 
     });
+
 
 }
 
 
 
 
-// Full screen result
-function showResult(success, title, name, guests) {
+function showResult(success,title,name,guests){
 
 
-    const overlay =
+    let overlay =
     document.getElementById("resultOverlay");
 
 
@@ -164,71 +179,71 @@ function showResult(success, title, name, guests) {
     playSound(success);
 
 
+}
 
-    setTimeout(() => {
 
-        overlay.className = "";
 
-    },3000);
+function hideResult(){
 
+    document.getElementById("resultOverlay").className="";
 
 }
 
 
 
 
-// Sounds
-function playSound(success) {
+function vibrate(pattern){
 
+    if(navigator.vibrate){
 
-    const audioContext =
-    new (window.AudioContext || window.webkitAudioContext)();
-
-
-    const oscillator =
-    audioContext.createOscillator();
-
-
-    const gain =
-    audioContext.createGain();
-
-
-
-    oscillator.connect(gain);
-
-    gain.connect(audioContext.destination);
-
-
-
-    if(success){
-
-        oscillator.frequency.value = 880;
-        gain.gain.value = 0.3;
-
-    } else {
-
-        oscillator.frequency.value = 220;
-        gain.gain.value = 0.3;
+        navigator.vibrate(pattern);
 
     }
 
+}
 
-    oscillator.start();
 
 
-    oscillator.stop(
-        audioContext.currentTime + 0.25
+// Faster reliable sound
+function playSound(success){
+
+
+    let ctx =
+    new (window.AudioContext || window.webkitAudioContext)();
+
+
+    let osc =
+    ctx.createOscillator();
+
+
+    let gain =
+    ctx.createGain();
+
+
+    osc.connect(gain);
+
+    gain.connect(ctx.destination);
+
+
+
+    osc.frequency.value =
+    success ? 880 : 220;
+
+
+    gain.gain.value = 0.15;
+
+
+    osc.start();
+
+
+    osc.stop(
+        ctx.currentTime + 0.15
     );
-
 
 }
 
 
 
-
-
-
-// Start scanner
 startScanner();
 
 
