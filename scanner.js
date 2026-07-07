@@ -1,4 +1,4 @@
-const API_URL = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+const API_URL = "https://script.google.com/macros/s/AKfycbwmM4jyZH-lweodCs8BoGEBa7WQBbES2SDGbJdBfDJgxRIxAUpB4Q-z2cncS2Gpg9bQCg/exec";
 
 let html5QrCode;
 let processing = false;
@@ -10,12 +10,14 @@ function startScanner() {
     html5QrCode = new Html5Qrcode("reader");
 
     html5QrCode.start(
+
         {
             facingMode: "environment"
         },
+
         {
-            fps: 15,
-            qrbox: 280
+            fps: 20,
+            qrbox: 300
         },
 
         (decodedText) => {
@@ -24,7 +26,6 @@ function startScanner() {
 
             processing = true;
 
-            // Pause camera while checking
             html5QrCode.pause();
 
             checkTicket(decodedText);
@@ -32,13 +33,13 @@ function startScanner() {
         },
 
         () => {
-            // Ignore normal scan failures
+            // Ignore scan errors
         }
 
     )
-    .catch(err => {
+    .catch(error => {
 
-        console.log(err);
+        console.log(error);
 
         document.getElementById("status").innerHTML =
         "Camera failed";
@@ -49,7 +50,7 @@ function startScanner() {
 
 
 
-// Check database
+// Check ticket
 function checkTicket(ticketID) {
 
 
@@ -64,7 +65,7 @@ function checkTicket(ticketID) {
     .then(data => {
 
 
-        if(data.success){
+        if (data.success) {
 
 
             showResult(
@@ -75,10 +76,14 @@ function checkTicket(ticketID) {
             );
 
 
-            vibrate([200]);
+            if(navigator.vibrate){
+                navigator.vibrate(200);
+            }
 
 
-        } else {
+        } 
+        
+        else {
 
 
             showResult(
@@ -89,13 +94,15 @@ function checkTicket(ticketID) {
             );
 
 
-            vibrate([200,100,200]);
+            if(navigator.vibrate){
+                navigator.vibrate([200,100,200]);
+            }
 
         }
 
 
 
-        setTimeout(()=>{
+        setTimeout(() => {
 
 
             hideResult();
@@ -108,18 +115,17 @@ function checkTicket(ticketID) {
             processing = false;
 
 
-            // Resume camera
             html5QrCode.resume();
 
 
-        },2500);
+        },1500);
 
 
 
     })
 
 
-    .catch(error=>{
+    .catch(error => {
 
 
         console.log(error);
@@ -128,7 +134,7 @@ function checkTicket(ticketID) {
         showResult(
             false,
             "❌ ERROR",
-            "Connection failed",
+            "Database connection failed",
             ""
         );
 
@@ -141,18 +147,16 @@ function checkTicket(ticketID) {
 
             html5QrCode.resume();
 
-
-        },2500);
+        },1500);
 
 
     });
-
 
 }
 
 
 
-
+// Full screen result
 function showResult(success,title,name,guests){
 
 
@@ -175,10 +179,6 @@ function showResult(success,title,name,guests){
     document.getElementById("resultGuests").innerHTML =
     guests;
 
-
-    playSound(success);
-
-
 }
 
 
@@ -186,59 +186,6 @@ function showResult(success,title,name,guests){
 function hideResult(){
 
     document.getElementById("resultOverlay").className="";
-
-}
-
-
-
-
-function vibrate(pattern){
-
-    if(navigator.vibrate){
-
-        navigator.vibrate(pattern);
-
-    }
-
-}
-
-
-
-// Faster reliable sound
-function playSound(success){
-
-
-    let ctx =
-    new (window.AudioContext || window.webkitAudioContext)();
-
-
-    let osc =
-    ctx.createOscillator();
-
-
-    let gain =
-    ctx.createGain();
-
-
-    osc.connect(gain);
-
-    gain.connect(ctx.destination);
-
-
-
-    osc.frequency.value =
-    success ? 880 : 220;
-
-
-    gain.gain.value = 0.15;
-
-
-    osc.start();
-
-
-    osc.stop(
-        ctx.currentTime + 0.15
-    );
 
 }
 
