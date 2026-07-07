@@ -87,6 +87,7 @@ body {
     height:100vh;
 
     display:none;
+    overflow:hidden;
 
     justify-content:center;
 
