@@ -72,7 +72,7 @@ function checkTicket(ticketID) {
                 true,
                 "✅ APPROVED",
                 data.name,
-                "Guests: " + data.guests
+                ""
             );
 
 
