@@ -174,11 +174,6 @@ function showResult(success,title,name,guests){
 
     document.getElementById("resultName").innerHTML =
     name;
-
-
-    document.getElementById("resultGuests").innerHTML =
-    guests;
-
 }
 
 
